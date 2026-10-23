@@ -21,7 +21,6 @@
       }
     };
   </script>
-  <!-- pdf.js: hiển thị PDF trực tiếp trên mọi trình duyệt, kể cả điện thoại -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <style>
@@ -32,18 +31,41 @@
     .tab-btn.active { background: #fff; color: #0056b3; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
     .panel { animation: fadeIn .35s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-    .pdf-host { min-height: 500px; max-height: 80vh; overflow-y: auto; background: #525659; padding: 8px; }
-    .pdf-host:fullscreen { max-height: none; height: 100vh; }
-    .pdf-host canvas { display: block; margin: 0 auto 8px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.3); max-width: 100%; height: auto; }
+
+    /* Khung PDF: rộng full chiều ngang của thẻ */
+    .pdf-host { min-height: 420px; max-height: 80vh; overflow-y: auto; background: #525659; padding: 6px; border-radius: 12px; }
+    .pdf-host:fullscreen { max-height: none; height: 100vh; border-radius: 0; }
+    .pdf-host canvas { display: block; margin: 0 auto 6px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.3); max-width: 100%; height: auto; }
+
     .logo-box { width: 56px; height: 56px; background: #fff; border-radius: 9999px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
     .logo-box img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
     .logo-fallback { color: #dc3545; font-size: 24px; }
+
+    /* ----- Trình chiếu hình ảnh ----- */
+    #slideshow { position: relative; overflow: hidden; background: #0f172a; aspect-ratio: 4 / 3; border-radius: 12px; }
+    @media (min-width: 768px) { #slideshow { aspect-ratio: 16 / 9; } }
+    .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0;
+             transition: all 1.2s ease; }
+    .slide.active { opacity: 1; transform: none; filter: none; }
+    /* Trạng thái xuất phát của từng hiệu ứng */
+    .fx-zoom   { transform: scale(1.3); }
+    .fx-left   { transform: translateX(100%); }
+    .fx-right  { transform: translateX(-100%); }
+    .fx-up     { transform: translateY(100%); }
+    .fx-down   { transform: translateY(-100%); }
+    .fx-blur   { filter: blur(24px); }
+    .fx-rotate { transform: rotate(15deg) scale(.6); }
+    .fx-flip   { transform: perspective(900px) rotateY(90deg); }
+    .fx-reveal { opacity: 1; clip-path: inset(0 100% 0 0); }
+    .fx-circle { opacity: 1; clip-path: circle(0% at 50% 50%); }
+    .slide.active.fx-reveal { clip-path: inset(0 0 0 0); }
+    .slide.active.fx-circle { clip-path: circle(150% at 50% 50%); }
   </style>
 </head>
 
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- ============ CẤU HÌNH ĐƯỜNG DẪN TÀI LIỆU ============ -->
+  <!-- ============ CẤU HÌNH TÀI LIỆU ============ -->
   <script>
     const DOCS = {
       CHUONG_TRINH: "docs/1-chuong-trinh.pdf",
@@ -57,9 +79,8 @@
   <!-- ============ HEADER ============ -->
   <header class="bg-gradient-to-br from-brand-blue via-blue-700 to-brand-red text-white relative overflow-hidden">
     <div class="absolute inset-x-0 bottom-0 h-1.5 bg-brand-gold"></div>
-    <div class="max-w-5xl mx-auto px-4 pt-5 pb-7">
+    <div class="max-w-6xl mx-auto px-4 pt-5 pb-7">
 
-      <!-- Logo Đoàn & Trường -->
       <div class="flex items-center justify-center gap-3 mb-4">
         <div class="logo-box">
           <img src="images/logo-doan.png" alt="Logo Đoàn TNCS Hồ Chí Minh"
@@ -71,7 +92,7 @@
         </div>
       </div>
 
-          <div class="text-center">
+      <div class="text-center">
         <p class="text-base sm:text-xl font-extrabold uppercase leading-snug text-yellow-300">
           Đoàn TNCS Hồ Chí Minh<br>
           Trường Cao đẳng Đắk Lắk
@@ -80,8 +101,8 @@
           Cổng tài liệu điện tử đại biểu
         </h1>
         <h2 class="mt-3 text-sm sm:text-lg font-bold leading-snug text-yellow-100">
-          Hội nghị tổng kết công tác Đoàn và phong trào thanh niên năm học 2025 – 2026
-          &amp; triển khai phương hướng nhiệm vụ năm học 2026 – 2027
+          Hội nghị tổng kết công tác Đoàn và phong trào thanh niên năm học 2025 – 2026 &amp;<br>
+          triển khai công tác Đoàn và phong trào thanh niên năm học 2026 – 2027
         </h2>
       </div>
 
@@ -110,7 +131,7 @@
 
   <!-- ============ MENU TABS ============ -->
   <nav class="sticky top-0 z-30 bg-brand-blue shadow-md">
-    <div id="tabNav" class="max-w-5xl mx-auto flex gap-2 overflow-x-auto no-scrollbar p-2">
+    <div id="tabNav" class="max-w-6xl mx-auto flex gap-2 overflow-x-auto no-scrollbar p-2">
       <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab1">
         <i class="fa-solid fa-list-check mr-1"></i> Chương trình
       </button>
@@ -126,21 +147,24 @@
       <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab5">
         <i class="fa-solid fa-trophy mr-1"></i> Khen thưởng
       </button>
+      <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab7">
+        <i class="fa-solid fa-images mr-1"></i> Hình ảnh
+      </button>
       <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab6">
         <i class="fa-solid fa-comments mr-1"></i> Góp ý
       </button>
     </div>
   </nav>
 
-  <main class="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-4 py-5">
+  <main class="flex-1 w-full max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-5">
 
-    <!-- TAB 1: CHƯƠNG TRÌNH (nội dung file 1) -->
+    <!-- TAB 1: CHƯƠNG TRÌNH -->
     <section id="tab1" class="panel hidden">
-      <div class="bg-white rounded-2xl shadow-sm border-2 border-brand-blue p-3 sm:p-4">
+      <div class="bg-white rounded-2xl shadow-sm border-2 border-brand-blue p-2 sm:p-4">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
           <h3 class="font-bold text-brand-blue"><i class="fa-solid fa-list-check mr-1"></i> Nội dung chương trình Hội nghị</h3>
           <div class="flex gap-2">
-            <button onclick="toggleFullscreen('wrap-tab1')"
+            <button onclick="toggleFullscreen('pdf-tab1')"
                     class="text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-3 py-2 shadow">
               <i class="fa-solid fa-expand mr-1"></i> Toàn màn hình
             </button>
@@ -150,61 +174,61 @@
             </a>
           </div>
         </div>
-        <div id="wrap-tab1"><div id="pdf-tab1" class="pdf-host rounded-xl"></div></div>
+        <div id="pdf-tab1" class="pdf-host"></div>
       </div>
     </section>
 
-    <!-- TAB 2: BÁO CÁO TỔNG KẾT (nội dung file 3) -->
+    <!-- TAB 2: BÁO CÁO TỔNG KẾT -->
     <section id="tab2" class="panel hidden">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-4">
         <h3 class="font-bold text-brand-blue mb-3"><i class="fa-solid fa-file-lines mr-1"></i> Báo cáo Tổng kết công tác Đoàn 2025 – 2026</h3>
         <div class="flex flex-wrap gap-2 mb-3">
           <a href="docs/3-bao-cao-tong-ket.pdf" download
              class="flex-1 sm:flex-none text-center text-sm font-semibold bg-brand-red hover:bg-red-700 text-white rounded-lg px-4 py-2.5 shadow">
             <i class="fa-solid fa-download mr-1"></i> Tải về Báo cáo Tổng kết (PDF)
           </a>
-          <button onclick="toggleFullscreen('wrap-tab2')"
+          <button onclick="toggleFullscreen('pdf-tab2')"
                   class="flex-1 sm:flex-none text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-4 py-2.5 shadow">
             <i class="fa-solid fa-expand mr-1"></i> Xem toàn màn hình
           </button>
         </div>
-        <div id="wrap-tab2"><div id="pdf-tab2" class="pdf-host rounded-xl"></div></div>
+        <div id="pdf-tab2" class="pdf-host"></div>
       </div>
     </section>
 
-    <!-- TAB 3: PHƯƠNG HƯỚNG (nội dung file 4) -->
+    <!-- TAB 3: PHƯƠNG HƯỚNG -->
     <section id="tab3" class="panel hidden">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-4">
         <h3 class="font-bold text-brand-blue mb-3"><i class="fa-solid fa-flag mr-1"></i> Phương hướng công tác Đoàn 2026 – 2027</h3>
         <div class="flex flex-wrap gap-2 mb-3">
           <a href="docs/4-phuong-huong.pdf" download
              class="flex-1 sm:flex-none text-center text-sm font-semibold bg-brand-red hover:bg-red-700 text-white rounded-lg px-4 py-2.5 shadow">
             <i class="fa-solid fa-download mr-1"></i> Tải về Phương hướng năm học mới (PDF)
           </a>
-          <button onclick="toggleFullscreen('wrap-tab3')"
+          <button onclick="toggleFullscreen('pdf-tab3')"
                   class="flex-1 sm:flex-none text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-4 py-2.5 shadow">
             <i class="fa-solid fa-expand mr-1"></i> Xem toàn màn hình
           </button>
         </div>
-        <div id="wrap-tab3"><div id="pdf-tab3" class="pdf-host rounded-xl"></div></div>
+        <div id="pdf-tab3" class="pdf-host"></div>
       </div>
     </section>
 
-    <!-- TAB 4: GIAO ƯỚC THI ĐUA (nội dung file 2) -->
+    <!-- TAB 4: GIAO ƯỚC THI ĐUA -->
     <section id="tab4" class="panel hidden">
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-4">
         <h3 class="font-bold text-brand-blue mb-3"><i class="fa-solid fa-handshake mr-1"></i> Giao ước thi đua 2026 – 2027</h3>
         <div class="flex flex-wrap gap-2 mb-3">
           <a href="docs/2-giao-uoc.pdf" download
              class="flex-1 sm:flex-none text-center text-sm font-semibold bg-brand-red hover:bg-red-700 text-white rounded-lg px-4 py-2.5 shadow">
             <i class="fa-solid fa-download mr-1"></i> Tải bản giao ước (PDF)
           </a>
-          <button onclick="toggleFullscreen('wrap-tab4')"
+          <button onclick="toggleFullscreen('pdf-tab4')"
                   class="flex-1 sm:flex-none text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-4 py-2.5 shadow">
             <i class="fa-solid fa-expand mr-1"></i> Xem toàn màn hình
           </button>
         </div>
-        <div id="wrap-tab4"><div id="pdf-tab4" class="pdf-host rounded-xl"></div></div>
+        <div id="pdf-tab4" class="pdf-host"></div>
       </div>
     </section>
 
@@ -217,6 +241,33 @@
           <i class="fa-solid fa-circle-info text-brand-blue text-2xl mb-2 block"></i>
           Nội dung đang được cập nhật.
         </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: HÌNH ẢNH HOẠT ĐỘNG (TRÌNH CHIẾU TỰ ĐỘNG) -->
+    <section id="tab7" class="panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-4">
+        <h3 class="font-bold text-brand-blue mb-3"><i class="fa-solid fa-images mr-1"></i> Hình ảnh hoạt động Đoàn năm học 2025 – 2026</h3>
+
+        <div id="slideshow">
+          <div id="slides" class="absolute inset-0"></div>
+          <button id="prevBtn" aria-label="Ảnh trước"
+                  class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black/40 hover:bg-black/60 text-white">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button id="nextBtn" aria-label="Ảnh tiếp"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black/40 hover:bg-black/60 text-white">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <button id="playBtn" aria-label="Tạm dừng / Phát"
+                  class="absolute right-2 top-2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white text-sm">
+            <i class="fa-solid fa-pause"></i>
+          </button>
+          <div id="caption"
+               class="absolute bottom-0 inset-x-0 z-10 bg-gradient-to-t from-black/75 to-transparent text-white text-sm sm:text-base font-semibold p-3 pt-8"></div>
+        </div>
+
+        <div id="dots" class="flex justify-center flex-wrap gap-1.5 mt-3"></div>
       </div>
     </section>
 
@@ -238,7 +289,7 @@
 
   <!-- ============ FOOTER ============ -->
   <footer class="bg-slate-900 text-slate-300 mt-6">
-    <div class="max-w-5xl mx-auto px-4 py-8 grid gap-6 sm:grid-cols-2 text-sm">
+    <div class="max-w-6xl mx-auto px-4 py-8 grid gap-6 sm:grid-cols-2 text-sm">
       <div>
         <p class="font-bold text-white uppercase">Trường Cao đẳng Đắk Lắk</p>
         <p class="mt-2 flex gap-2"><i class="fa-solid fa-location-dot mt-1 text-brand-gold"></i>
@@ -258,60 +309,194 @@
   </footer>
 
   <script>
-    /* ---------- Hiển thị PDF bằng pdf.js (từng trang, vừa chiều rộng màn hình) ---------- */
-    const pdfLoaded = {};
-
-    async function renderPdf(hostId, url) {
-      if (pdfLoaded[hostId]) return;
-      pdfLoaded[hostId] = true;
-      const host = document.getElementById(hostId);
-      host.innerHTML = '<div class="p-6 text-center text-slate-200 text-sm"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải tài liệu...</div>';
-      try {
-        const pdf = await pdfjsLib.getDocument(url).promise;
-        host.innerHTML = "";
-        const cssWidth = Math.max(280, host.clientWidth - 16);
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const base = page.getViewport({ scale: 1 });
-          const vp = page.getViewport({ scale: (cssWidth / base.width) * dpr });
-          const canvas = document.createElement("canvas");
-          canvas.width = vp.width;
-          canvas.height = vp.height;
-          canvas.style.width = cssWidth + "px";
-          host.appendChild(canvas);
-          await page.render({ canvasContext: canvas.getContext("2d"), viewport: vp }).promise;
-        }
-      } catch (err) {
-        console.error(err);
-        pdfLoaded[hostId] = false;
-        host.innerHTML = `<div class="p-6 text-center text-white text-sm">
-            <i class="fa-solid fa-circle-exclamation text-2xl mb-2 block"></i>
-            Không hiển thị được tài liệu trên trình duyệt này.<br>
-            Vui lòng nhấn nút <b>Tải (PDF)</b> phía trên để mở.</div>`;
-      }
-    }
-
+    /* =====================================================
+       1. HIỂN THỊ PDF (pdf.js) – vừa đúng chiều ngang khung
+       ===================================================== */
     const pdfMap = {
       tab1: { host: "pdf-tab1", url: DOCS.CHUONG_TRINH },
       tab2: { host: "pdf-tab2", url: DOCS.BAO_CAO },
       tab3: { host: "pdf-tab3", url: DOCS.PHUONG_HUONG },
       tab4: { host: "pdf-tab4", url: DOCS.GIAO_UOC }
     };
+    const pdfState = {};
 
-    /* ---------- Toàn màn hình khung PDF ---------- */
-    function toggleFullscreen(wrapId) {
-      const el = document.getElementById(wrapId).querySelector(".pdf-host") || document.getElementById(wrapId);
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else if (el.requestFullscreen) {
-        el.requestFullscreen().catch(() => window.open(pdfMap[wrapId.replace("wrap-", "")]?.url, "_blank"));
-      } else {
-        window.open(pdfMap[wrapId.replace("wrap-", "")]?.url, "_blank");
+    async function renderPdf(hostId, url) {
+      const host = document.getElementById(hostId);
+      const width = Math.floor(host.clientWidth);
+      if (!width) return;                       // tab đang ẩn
+      const st = (pdfState[hostId] ||= { doc: null, width: 0, busy: false });
+      if (st.busy || st.width === width) return;
+      st.busy = true;
+      let failed = false;
+      try {
+        if (!st.doc) {
+          host.innerHTML = '<div class="p-6 text-center text-slate-200 text-sm"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải tài liệu...</div>';
+          st.doc = await pdfjsLib.getDocument(url).promise;
+        }
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const frag = document.createDocumentFragment();
+        for (let i = 1; i <= st.doc.numPages; i++) {
+          const page = await st.doc.getPage(i);
+          const base = page.getViewport({ scale: 1 });
+          const vp = page.getViewport({ scale: (width / base.width) * dpr });
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.floor(vp.width);
+          canvas.height = Math.floor(vp.height);
+          canvas.style.width = width + "px";
+          frag.appendChild(canvas);
+          await page.render({ canvasContext: canvas.getContext("2d"), viewport: vp }).promise;
+        }
+        host.innerHTML = "";
+        host.appendChild(frag);
+        st.width = width;
+      } catch (err) {
+        failed = true;
+        console.error(err);
+        st.doc = null;
+        host.innerHTML = `<div class="p-6 text-center text-white text-sm">
+            <i class="fa-solid fa-circle-exclamation text-2xl mb-2 block"></i>
+            Không hiển thị được tài liệu trên trình duyệt này.<br>
+            Vui lòng nhấn nút <b>Tải (PDF)</b> phía trên để mở.</div>`;
+      } finally {
+        st.busy = false;
+        if (!failed && Math.floor(host.clientWidth) !== width) renderPdf(hostId, url);
       }
     }
 
-    /* ---------- Chuyển tab, không reload trang ---------- */
+    // Tự vẽ lại PDF khi đổi kích thước màn hình hoặc khi tab được mở
+    Object.values(pdfMap).forEach(({ host, url }) => {
+      const el = document.getElementById(host);
+      new ResizeObserver(() => renderPdf(host, url)).observe(el);
+    });
+
+    function toggleFullscreen(hostId) {
+      const el = document.getElementById(hostId);
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => window.open(Object.values(pdfMap).find(p => p.host === hostId).url, "_blank"));
+      } else {
+        window.open(Object.values(pdfMap).find(p => p.host === hostId).url, "_blank");
+      }
+    }
+
+    /* =====================================================
+       2. TRÌNH CHIẾU HÌNH ẢNH HOẠT ĐỘNG
+       -------------------------------------------------------
+       Thêm ảnh vào danh sách GALLERY:
+       - Ảnh trên GitHub:  { src: "images/hoat-dong/ten-anh.jpg", caption: "Chú thích" }
+       - Ảnh trên Google Drive (đặt quyền "Bất kỳ ai có liên kết"):
+         { driveId: "ID_lấy_từ_đường_link", caption: "Chú thích" }
+         (ID là đoạn nằm giữa /d/ và /view trong link Drive)
+       ===================================================== */
+    const GALLERY = [
+      // { src: "images/hoat-dong/01.jpg", caption: "Ngày Chủ nhật xanh 2026" },
+      // { src: "images/hoat-dong/02.jpg", caption: "Tiếp sức mùa thi 2026" },
+      // { driveId: "ID_ANH_TREN_DRIVE", caption: "Ngày hội Đoàn viên" },
+    ];
+
+    const FX = ["fx-fade", "fx-zoom", "fx-left", "fx-right", "fx-up", "fx-down",
+                "fx-blur", "fx-rotate", "fx-flip", "fx-reveal", "fx-circle"];
+    const GAP = 4500;           // thời gian giữa 2 ảnh (ms)
+    const gEl = {
+      slides:  document.getElementById("slides"),
+      caption: document.getElementById("caption"),
+      dots:    document.getElementById("dots"),
+      play:    document.getElementById("playBtn")
+    };
+    let gIndex = -1, gTimer = null, gLastFx = "";
+
+    function gSrc(item) {
+      return item.driveId ? `https://lh3.googleusercontent.com/d/${item.driveId}` : item.src;
+    }
+
+    function gBuildDots() {
+      gEl.dots.innerHTML = GALLERY.map((_, i) =>
+        `<button aria-label="Ảnh ${i + 1}" class="w-2.5 h-2.5 rounded-full bg-slate-300"></button>`).join("");
+      gEl.dots.querySelectorAll("button").forEach((b, i) => b.addEventListener("click", () => gGo(i)));
+    }
+
+    function gUpdateUI() {
+      if (!GALLERY.length) return;
+      gEl.caption.textContent = GALLERY[gIndex]?.caption || "";
+      gEl.dots.querySelectorAll("button").forEach((b, i) =>
+        b.className = `w-2.5 h-2.5 rounded-full transition ${i === gIndex ? "bg-brand-red scale-125" : "bg-slate-300"}`);
+      gEl.play.innerHTML = gTimer ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+    }
+
+    function gShow(i) {
+      const n = GALLERY.length;
+      if (!n) return;
+      gIndex = ((i % n) + n) % n;
+      const item = GALLERY[gIndex];
+
+      // Chọn hiệu ứng ngẫu nhiên, không trùng với lần trước
+      let fx;
+      do { fx = FX[Math.floor(Math.random() * FX.length)]; } while (fx === gLastFx && FX.length > 1);
+      gLastFx = fx;
+
+      const img = new Image();
+      img.className = `slide ${fx}`;
+      img.alt = item.caption || "";
+      img.src = gSrc(item);
+      img.onerror = () => { gEl.caption.textContent = "Không tải được ảnh: " + (item.caption || ""); };
+      gEl.slides.appendChild(img);
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.classList.add("active");
+        [...gEl.slides.children].forEach(c => {
+          if (c !== img && c.classList.contains("active")) {
+            c.classList.remove("active");          // ảnh cũ chạy hiệu ứng thoát
+            setTimeout(() => c.remove(), 1300);
+          }
+        });
+      }));
+      gUpdateUI();
+    }
+
+    function gStart() {
+      if (!GALLERY.length || gTimer) return;
+      if (gIndex < 0) gShow(0);
+      gTimer = setInterval(() => gShow(gIndex + 1), GAP);
+      gUpdateUI();
+    }
+
+    function gStop() {
+      clearInterval(gTimer);
+      gTimer = null;
+      gUpdateUI();
+    }
+
+    function gGo(i) {
+      gShow(i);
+      if (gTimer) { clearInterval(gTimer); gTimer = setInterval(() => gShow(gIndex + 1), GAP); }
+    }
+
+    document.getElementById("nextBtn").onclick = () => gGo(gIndex + 1);
+    document.getElementById("prevBtn").onclick = () => gGo(gIndex - 1);
+    document.getElementById("playBtn").onclick = () => (gTimer ? gStop() : gStart());
+
+    // Vuốt trái/phải trên điện thoại
+    let touchX = null;
+    gEl.slides.parentElement.addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
+    gEl.slides.parentElement.addEventListener("touchend", e => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 40) (dx < 0 ? gGo(gIndex + 1) : gGo(gIndex - 1));
+      touchX = null;
+    }, { passive: true });
+
+    if (!GALLERY.length) {
+      gEl.slides.innerHTML = `<div class="absolute inset-0 flex items-center justify-center text-center text-slate-300 text-sm p-6">
+          Chưa có hình ảnh. Thêm ảnh vào danh sách GALLERY trong index.html.</div>`;
+      document.querySelectorAll("#prevBtn,#nextBtn,#playBtn").forEach(b => b.disabled = true);
+    } else {
+      gBuildDots();
+    }
+
+    /* =====================================================
+       3. CHUYỂN TAB (không reload trang)
+       ===================================================== */
     const buttons = document.querySelectorAll("#tabNav [data-tab]");
     const panels  = document.querySelectorAll("main > section");
 
@@ -324,7 +509,7 @@
         b.classList.toggle("text-white/90", !active);
         b.setAttribute("aria-selected", active);
       });
-      if (pdfMap[name]) renderPdf(pdfMap[name].host, pdfMap[name].url);
+      if (name === "tab7") gStart(); else gStop();
       history.replaceState(null, "", "#" + name);
       window.scrollTo({ top: document.getElementById("tabNav").offsetTop, behavior: "smooth" });
     }

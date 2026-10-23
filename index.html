@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Cổng Tài liệu Điện tử Đại biểu – Đoàn TNCS HCM Trường CĐ Đắk Lắk</title>
+  <meta name="description" content="Cổng tài liệu điện tử đại biểu – Hội nghị tổng kết công tác Đoàn năm học 2025-2026">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { brand: { blue: '#0056b3', red: '#dc3545', gold: '#ffc107' } }
+        }
+      }
+    };
+  </script>
+  <!-- pdf.js: hiển thị PDF trực tiếp trên mọi trình duyệt, kể cả điện thoại -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <style>
+    html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .tab-btn { transition: all .25s ease; }
+    .tab-btn.active { background: #fff; color: #0056b3; box-shadow: 0 4px 14px rgba(0,0,0,.15); }
+    .panel { animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .pdf-host { min-height: 500px; max-height: 80vh; overflow-y: auto; background: #525659; padding: 8px; }
+    .pdf-host:fullscreen { max-height: none; height: 100vh; }
+    .pdf-host canvas { display: block; margin: 0 auto 8px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.3); max-width: 100%; height: auto; }
+    .logo-box { width: 56px; height: 56px; background: #fff; border-radius: 9999px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+    .logo-box img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+    .logo-fallback { color: #dc3545; font-size: 24px; }
+  </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- ============ CẤU HÌNH ĐƯỜNG DẪN TÀI LIỆU ============ -->
+  <script>
+    const DOCS = {
+      CHUONG_TRINH: "docs/1-chuong-trinh.pdf",
+      GIAO_UOC:     "docs/2-giao-uoc.pdf",
+      BAO_CAO:      "docs/3-bao-cao-tong-ket.pdf",
+      PHUONG_HUONG: "docs/4-phuong-huong.pdf"
+    };
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  </script>
+
+  <!-- ============ HEADER ============ -->
+  <header class="bg-gradient-to-br from-brand-blue via-blue-700 to-brand-red text-white relative overflow-hidden">
+    <div class="absolute inset-x-0 bottom-0 h-1.5 bg-brand-gold"></div>
+    <div class="max-w-5xl mx-auto px-4 pt-5 pb-7">
+
+      <!-- Logo Đoàn & Trường -->
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <div class="logo-box">
+          <img src="images/logo-doan.png" alt="Logo Đoàn TNCS Hồ Chí Minh"
+               onerror="this.outerHTML='<i class=\'fa-solid fa-star logo-fallback\'></i>'">
+        </div>
+        <div class="logo-box">
+          <img src="images/logo-dlc.png" alt="Logo Trường Cao đẳng Đắk Lắk"
+               onerror="this.outerHTML='<i class=\'fa-solid fa-school logo-fallback\'></i>'">
+        </div>
+      </div>
+
+      <div class="text-center">
+        <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-brand-gold leading-tight">
+          Đoàn TNCS Hồ Chí Minh – Trường Cao đẳng Đắk Lắk
+        </p>
+        <span class="mt-4 inline-flex items-center gap-2 bg-white/15 border border-white/25 rounded-full px-3 py-1 text-[11px] font-semibold tracking-wide uppercase">
+          <i class="fa-solid fa-qrcode"></i> QR Code Document Portal
+        </span>
+        <h1 class="mt-3 text-xl sm:text-3xl font-extrabold uppercase leading-snug">
+          Cổng tài liệu điện tử đại biểu
+        </h1>
+        <h2 class="mt-3 text-sm sm:text-lg font-bold leading-snug text-yellow-100">
+          Hội nghị tổng kết công tác Đoàn và phong trào thanh niên năm học 2025 – 2026
+          &amp; triển khai phương hướng nhiệm vụ năm học 2026 – 2027
+        </h2>
+      </div>
+
+      <div class="mt-5 grid gap-2 sm:grid-cols-2 max-w-3xl mx-auto">
+        <div class="flex items-center gap-3 bg-white text-slate-800 rounded-xl px-4 py-3 shadow-lg">
+          <div class="w-9 h-9 rounded-lg bg-brand-gold/25 text-brand-blue flex items-center justify-center shrink-0">
+            <i class="fa-regular fa-clock"></i>
+          </div>
+          <div>
+            <p class="text-[11px] uppercase font-semibold text-slate-500">Thời gian</p>
+            <p class="font-bold text-sm">16h30 ngày 23/10/2026</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 bg-white text-slate-800 rounded-xl px-4 py-3 shadow-lg">
+          <div class="w-9 h-9 rounded-lg bg-brand-red/10 text-brand-red flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div>
+            <p class="text-[11px] uppercase font-semibold text-slate-500">Địa điểm</p>
+            <p class="font-bold text-sm leading-snug">Hội trường Tầng 3, CS 1 – 594 Lê Duẩn, P. Ea Kao, Tỉnh Đắk Lắk</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ MENU TABS ============ -->
+  <nav class="sticky top-0 z-30 bg-brand-blue shadow-md">
+    <div id="tabNav" class="max-w-5xl mx-auto flex gap-2 overflow-x-auto no-scrollbar p-2">
+      <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab1">
+        <i class="fa-solid fa-list-check mr-1"></i> Chương trình
+      </button>
+      <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab2">
+        <i class="fa-solid fa-file-lines mr-1"></i> Báo cáo 2025–2026
+      </button>
+      <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab3">
+        <i class="fa-solid fa-flag mr-1"></i> Phương hướng 2026–2027
+      </button>
+      <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab4">
+        <i class="fa-solid fa-handshake mr-1"></i> Giao ước thi đua
+      </button>
+      <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab5">
+        <i class="fa-solid fa-trophy mr-1"></i> Khen thưởng
+      </button>
+      <button class="tab-btn shrink-0 rounded-lg px-3 py-2 text-xs sm:text-sm font-semibold text-white/90 hover:bg-white/10" data-tab="tab6">
+        <i class="fa-solid fa-comments mr-1"></i> Góp ý
+      </button>
+    </div>
+  </nav>
+
+  <main class="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-4 py-5">
+
+    <!-- TAB 1: CHƯƠNG TRÌNH (nội dung file 1) -->
+    <section id="tab1" class="panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border-2 border-brand-blue p-3 sm:p-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <h3 class="font-bold text-brand-blue"><i class="fa-solid fa-list-check mr-1"></i> Nội dung chương trình Hội nghị</h3>
+          <div class="flex gap-2">
+            <button onclick="toggleFullscreen('wrap-tab1')"
+                    class="text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-3 py-2 shadow">
+              <i class="fa-solid fa-expand mr-1"></i> Toàn màn hình
+            </button>
+            <a href="docs/1-chuong-trinh.pdf" download
+               class="text-sm font-semibold bg-brand-red hover:bg-red-700 text-white rounded-lg px-3 py-2 shadow">
+              <i class="fa-solid fa-download mr-1"></i> Tải (.PDF)
+            </a>
+          </div>
+        </div>
+        <div id="wrap-tab1"><div id="pdf-tab1" class="pdf-host rounded-xl"></div></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: BÁO CÁO TỔNG KẾT (nội dung file 3) -->
+    <section id="tab2" class="panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <h3 class="font-bold text-brand-blue mb-3"><i class="fa-solid fa-file-lines mr-1"></i> Báo cáo Tổng kết công tác Đoàn 2025 – 2026</h3>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <a href="docs/3-bao-cao-tong-ket.pdf" download
+             class="flex-1 sm:flex-none text-center text-sm font-semibold bg-brand-red hover:bg-red-700 text-white rounded-lg px-4 py-2.5 shadow">
+            <i class="fa-solid fa-download mr-1"></i> Tải về Báo cáo Tổng kết (PDF)
+          </a>
+          <button onclick="toggleFullscreen('wrap-tab2')"
+                  class="flex-1 sm:flex-none text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-4 py-2.5 shadow">
+            <i class="fa-solid fa-expand mr-1"></i> Xem toàn màn hình
+          </button>
+        </div>
+        <div id="wrap-tab2"><div id="pdf-tab2" class="pdf-host rounded-xl"></div></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PHƯƠNG HƯỚNG (nội dung file 4) -->
+    <section id="tab3" class="panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <h3 class="font-bold text-brand-blue mb-3"><i class="fa-solid fa-flag mr-1"></i> Phương hướng công tác Đoàn 2026 – 2027</h3>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <a href="docs/4-phuong-huong.pdf" download
+             class="flex-1 sm:flex-none text-center text-sm font-semibold bg-brand-red hover:bg-red-700 text-white rounded-lg px-4 py-2.5 shadow">
+            <i class="fa-solid fa-download mr-1"></i> Tải về Phương hướng năm học mới (PDF)
+          </a>
+          <button onclick="toggleFullscreen('wrap-tab3')"
+                  class="flex-1 sm:flex-none text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-4 py-2.5 shadow">
+            <i class="fa-solid fa-expand mr-1"></i> Xem toàn màn hình
+          </button>
+        </div>
+        <div id="wrap-tab3"><div id="pdf-tab3" class="pdf-host rounded-xl"></div></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: GIAO ƯỚC THI ĐUA (nội dung file 2) -->
+    <section id="tab4" class="panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <h3 class="font-bold text-brand-blue mb-3"><i class="fa-solid fa-handshake mr-1"></i> Giao ước thi đua 2026 – 2027</h3>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <a href="docs/2-giao-uoc.pdf" download
+             class="flex-1 sm:flex-none text-center text-sm font-semibold bg-brand-red hover:bg-red-700 text-white rounded-lg px-4 py-2.5 shadow">
+            <i class="fa-solid fa-download mr-1"></i> Tải bản giao ước (PDF)
+          </a>
+          <button onclick="toggleFullscreen('wrap-tab4')"
+                  class="flex-1 sm:flex-none text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-4 py-2.5 shadow">
+            <i class="fa-solid fa-expand mr-1"></i> Xem toàn màn hình
+          </button>
+        </div>
+        <div id="wrap-tab4"><div id="pdf-tab4" class="pdf-host rounded-xl"></div></div>
+      </div>
+    </section>
+
+    <!-- TAB 5: KHEN THƯỞNG -->
+    <section id="tab5" class="panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <h3 class="font-bold text-brand-blue mb-1"><i class="fa-solid fa-trophy mr-1"></i> Danh sách khen thưởng năm học 2025 – 2026</h3>
+        <p class="text-sm text-slate-500 mb-3">Tập thể và cá nhân xuất sắc.</p>
+        <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-sm text-slate-500">
+          <i class="fa-solid fa-circle-info text-brand-blue text-2xl mb-2 block"></i>
+          Nội dung đang được cập nhật.
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: GÓP Ý -->
+    <section id="tab6" class="panel hidden">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <h3 class="font-bold text-brand-blue mb-1"><i class="fa-solid fa-comments mr-1"></i> Đóng góp ý kiến &amp; Đặt câu hỏi</h3>
+        <p class="text-sm text-slate-500 mb-3">Gửi câu hỏi, góp ý trực tiếp tới Ban Thường vụ Đoàn trường.</p>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
+          <p class="text-sm text-slate-600 mb-3">Nhấn nút bên dưới để gửi góp ý.</p>
+          <a href="mailto:doantruong@dlc.edu.vn?subject=G%C3%B3p%20%C3%BD%20H%E1%BB%99i%20ngh%E1%BB%8B%20%C4%90o%C3%A0n%202026"
+             class="inline-block text-sm font-semibold bg-brand-blue hover:bg-blue-800 text-white rounded-lg px-4 py-2.5 shadow">
+            <i class="fa-solid fa-envelope mr-1"></i> Gửi góp ý qua email
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="bg-slate-900 text-slate-300 mt-6">
+    <div class="max-w-5xl mx-auto px-4 py-8 grid gap-6 sm:grid-cols-2 text-sm">
+      <div>
+        <p class="font-bold text-white uppercase">Trường Cao đẳng Đắk Lắk</p>
+        <p class="mt-2 flex gap-2"><i class="fa-solid fa-location-dot mt-1 text-brand-gold"></i>
+          Cơ sở 1 – Số 594 Lê Duẩn, Phường Ea Kao, Thành phố Buôn Ma Thuột, Tỉnh Đắk Lắk.</p>
+      </div>
+      <div>
+        <p class="font-bold text-white uppercase">Liên hệ</p>
+        <p class="mt-2 flex gap-2"><i class="fa-solid fa-envelope mt-1 text-brand-gold"></i>
+          <a href="mailto:doantruong@dlc.edu.vn" class="hover:text-white underline">doantruong@dlc.edu.vn</a></p>
+        <p class="mt-2 flex gap-2"><i class="fa-brands fa-facebook mt-1 text-brand-gold"></i>
+          Fanpage: Tuổi trẻ Trường Cao đẳng Đắk Lắk</p>
+      </div>
+    </div>
+    <div class="border-t border-slate-700 text-center text-xs py-4 px-4">
+      © 2026 Ban Chấp hành Đoàn trường Cao đẳng Đắk Lắk – Chuyển đổi số công tác Đoàn.
+    </div>
+  </footer>
+
+  <script>
+    /* ---------- Hiển thị PDF bằng pdf.js (từng trang, vừa chiều rộng màn hình) ---------- */
+    const pdfLoaded = {};
+
+    async function renderPdf(hostId, url) {
+      if (pdfLoaded[hostId]) return;
+      pdfLoaded[hostId] = true;
+      const host = document.getElementById(hostId);
+      host.innerHTML = '<div class="p-6 text-center text-slate-200 text-sm"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang tải tài liệu...</div>';
+      try {
+        const pdf = await pdfjsLib.getDocument(url).promise;
+        host.innerHTML = "";
+        const cssWidth = Math.max(280, host.clientWidth - 16);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const base = page.getViewport({ scale: 1 });
+          const vp = page.getViewport({ scale: (cssWidth / base.width) * dpr });
+          const canvas = document.createElement("canvas");
+          canvas.width = vp.width;
+          canvas.height = vp.height;
+          canvas.style.width = cssWidth + "px";
+          host.appendChild(canvas);
+          await page.render({ canvasContext: canvas.getContext("2d"), viewport: vp }).promise;
+        }
+      } catch (err) {
+        console.error(err);
+        pdfLoaded[hostId] = false;
+        host.innerHTML = `<div class="p-6 text-center text-white text-sm">
+            <i class="fa-solid fa-circle-exclamation text-2xl mb-2 block"></i>
+            Không hiển thị được tài liệu trên trình duyệt này.<br>
+            Vui lòng nhấn nút <b>Tải (PDF)</b> phía trên để mở.</div>`;
+      }
+    }
+
+    const pdfMap = {
+      tab1: { host: "pdf-tab1", url: DOCS.CHUONG_TRINH },
+      tab2: { host: "pdf-tab2", url: DOCS.BAO_CAO },
+      tab3: { host: "pdf-tab3", url: DOCS.PHUONG_HUONG },
+      tab4: { host: "pdf-tab4", url: DOCS.GIAO_UOC }
+    };
+
+    /* ---------- Toàn màn hình khung PDF ---------- */
+    function toggleFullscreen(wrapId) {
+      const el = document.getElementById(wrapId).querySelector(".pdf-host") || document.getElementById(wrapId);
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else if (el.requestFullscreen) {
+        el.requestFullscreen().catch(() => window.open(pdfMap[wrapId.replace("wrap-", "")]?.url, "_blank"));
+      } else {
+        window.open(pdfMap[wrapId.replace("wrap-", "")]?.url, "_blank");
+      }
+    }
+
+    /* ---------- Chuyển tab, không reload trang ---------- */
+    const buttons = document.querySelectorAll("#tabNav [data-tab]");
+    const panels  = document.querySelectorAll("main > section");
+
+    function showTab(name) {
+      if (!document.getElementById(name)) name = "tab1";
+      panels.forEach(p => p.classList.toggle("hidden", p.id !== name));
+      buttons.forEach(b => {
+        const active = b.dataset.tab === name;
+        b.classList.toggle("active", active);
+        b.classList.toggle("text-white/90", !active);
+        b.setAttribute("aria-selected", active);
+      });
+      if (pdfMap[name]) renderPdf(pdfMap[name].host, pdfMap[name].url);
+      history.replaceState(null, "", "#" + name);
+      window.scrollTo({ top: document.getElementById("tabNav").offsetTop, behavior: "smooth" });
+    }
+
+    buttons.forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+    showTab(location.hash.replace("#", "") || "tab1");
+  </script>
+</body>
+</html>
